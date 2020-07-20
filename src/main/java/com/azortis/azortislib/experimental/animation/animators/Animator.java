@@ -41,7 +41,7 @@ public class Animator implements IAnimator, Runnable {
 
     }
 
-    public static Animator getInstance(int updateDelay) {
+    public synchronized static Animator getInstance(int updateDelay) {
         if (instance == null) instance = new Animator(updateDelay);
         return instance;
     }

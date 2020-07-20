@@ -16,27 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.utils;
+package com.azortis.azortislib.experimental.inventory.item;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-public class FileUtils {
-
-    public static void copy(InputStream in, File file) {
-        try (OutputStream out = new FileOutputStream(file)) {
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+public enum SerializableItemOptions {
+    /**
+     * An indicator that this item is a filler item and will be filled in any of the empty slots.
+     * To prevent spam the slots list won't have every slot a filler is actually in.
+     */
+    FILLER,
+    /**
+     * This is a dummy item, which is automatically replaced by the guis with the actual items. i.e. If this were an
+     * automatically filling up paginated gui, every item that is marked as a dummy item will be replaced with the actual
+     * input after filling up.
+     */
+    DUMMY_ITEM
 }
