@@ -18,57 +18,42 @@
 
 package com.azortis.azortislib.inventory;
 
+import com.azortis.azortislib.inventory.inventories.IInventory;
+import com.azortis.azortislib.inventory.item.Item;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
+// todo: document this
 public class InventoryListener implements Listener {
-    private static InventoryListener listener;
-
-    private InventoryListener(Plugin plugin) {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
-
-    public static InventoryListener initialize(Plugin plugin) {
-        if (listener == null) listener = new InventoryListener(plugin);
-        return listener;
+    public static void init(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(new InventoryListener(), plugin);
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() != null
-                && event.getClickedInventory().getHolder() instanceof IMenu && event.getCurrentItem() != null
-                && event.getCurrentItem().getType() != Material.AIR) {
-            IMenu menu = (IMenu) event.getClickedInventory().getHolder();
-            menu.getItem(event.getSlot()).useAction(event);
-
+    public void onPlayerClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof IInventory
+                && event.getCurrentItem() != null) {
+            Item i = ((IInventory) event.getClickedInventory().getHolder()).getItem(event.getSlot());
+            if (i != null) i.getAction().accept(event);
         }
+
 
     }
 
     @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getHolder() != null && event.getInventory().getHolder() instanceof IMenu) {
-            IMenu menu = (IMenu) event.getInventory().getHolder();
-            menu.getOpenCondition().forEach(condition -> condition.test(event));
-        }
+    public void onPlayerOpen(InventoryOpenEvent event) {
+        if (event.getInventory().getHolder() instanceof IInventory)
+            ((IInventory) event.getInventory().getHolder()).getOpenConsumers().forEach(consumer -> consumer.accept(event));
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() != null && event.getInventory().getHolder() instanceof IMenu) {
-            IMenu menu = (IMenu) event.getInventory().getHolder();
-            menu.getCloseCondition().forEach(condition -> condition.test(event));
-            if(menu instanceof IPaginatedMenu) {
-                ((IPaginatedMenu) menu).onInventoryClose((Player) event.getPlayer());
-            }
-        }
+    public void onPlayerClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof IInventory)
+            ((IInventory) event.getInventory().getHolder()).getCloseConsumers().forEach(consumer -> consumer.accept(event));
     }
-
 }
