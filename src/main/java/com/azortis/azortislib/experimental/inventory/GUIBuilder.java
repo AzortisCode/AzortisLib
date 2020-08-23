@@ -16,9 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.animation;
+package com.azortis.azortislib.experimental.inventory;
 
-// todo: document this
-public interface Supplier<T> {
-    T[] supplyArguments();
+public class GUIBuilder {
 }
