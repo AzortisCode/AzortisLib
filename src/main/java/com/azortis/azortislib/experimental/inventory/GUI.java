@@ -20,6 +20,7 @@ package com.azortis.azortislib.experimental.inventory;
 
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -64,7 +65,7 @@ public interface GUI {
      *
      * @return the configuration of the inventory
      */
-    @NotNull Template getConfiguration();
+    @Nullable Template getConfiguration();
 
     /**
      * Returns whether the gui is configurable by server owners.

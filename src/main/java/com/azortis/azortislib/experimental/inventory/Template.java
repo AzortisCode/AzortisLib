@@ -27,6 +27,7 @@ import java.util.Map;
 public class Template {
     private final Map<String, Pair<Integer, Item>> pairMap = new HashMap<>();
     private final String name;
+    private int invSize;
 
     /**
      * @param templateConfiguration the gson configuration object if needed
@@ -34,8 +35,9 @@ public class Template {
      * @param isConfigurable        whether to ignore or use the template configuration
      * @throws NullPointerException throws if pairMap is null or empty.
      */
-    public Template(Map<String, Object> templateConfiguration, Map<String, Pair<Integer, Item>> pairMap, boolean isConfigurable, String name)
+    public Template(Map<String, Object> templateConfiguration, Map<String, Pair<Integer, Item>> pairMap, boolean isConfigurable, String name, int invSize)
             throws NullPointerException {
+        this.invSize = invSize;
         this.name = name;
         CONFIGURE:
         {
@@ -45,6 +47,8 @@ public class Template {
                     // obviously something is wrong so we can't use the configured version and try to use defaults
                     break CONFIGURE;
                 }
+                if (templateConfiguration.containsKey("invSize"))
+                    this.invSize = (int) templateConfiguration.get("invSize");
                 for (String s : pairMap.keySet()) {
                     Map<String, Object> values = (Map<String, Object>) templateConfiguration.get(s);
                     if (values == null || values.isEmpty() || !values.containsKey("slot") || !values.containsKey("item"))
@@ -66,12 +70,12 @@ public class Template {
 
     }
 
-    private static Item loadItem(Map<String, Object> jsonItem) {
+    private Item loadItem(Map<String, Object> jsonItem) {
         // todo: complete this - nbt data support
         return null;
     }
 
-    private static Map<String, Object> unloadItem(Item item) {
+    private Map<String, Object> unloadItem(Item item) {
         // todo: complete this - nbt data support
         return null;
     }
@@ -86,7 +90,7 @@ public class Template {
      * @return immutable array of items - not including actions (actions are mutable)
      */
     public Item[] getItems() {
-        Item[] arr = new Item[pairMap.size()];
+        Item[] arr = new Item[invSize];
         pairMap.values().forEach(integerItemPair -> arr[integerItemPair.getKey()] = integerItemPair.getValue());
         return arr;
     }

@@ -18,6 +18,7 @@
 
 package com.azortis.azortislib.experimental.inventory;
 
+import com.azortis.azortislib.experimental.inventory.impl.v1_15.GUIBuilder;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
@@ -97,11 +98,6 @@ public interface GUIEngine extends Listener {
     Template saveTemplate(@NotNull Map<String, Pair<Integer, Item>> items, String templateName);
 
     /**
-     * Reloads pages that are open and are being handled by this GUIEngine.
-     */
-    void reloadPages();
-
-    /**
      * A default method which is used when the GUIEngine is first created. Used to register runnables and event listeners.
      *
      * @param plugin the plugin to use to initialize the engine.
@@ -119,11 +115,15 @@ public interface GUIEngine extends Listener {
     // todo check what happens when clicked outside of the inventory
     @EventHandler
     default void onInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof Page) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Page) {
             Page page = (Page) event.getInventory().getHolder();
+            assert page != null;
             if (getPageRegistry().containsKey(page.getUUID())) {
-                Consumer<InventoryClickEvent> consumer = page.getGUI().getItems()[event.getSlot()].getAction();
-                if (consumer != null) consumer.accept(event);
+                // If intellij tells you this can't be null, it can. The array isn't null, but the items inside might be.
+                if (page.getGUI().getItems()[event.getSlot()] != null) {
+                    Consumer<InventoryClickEvent> consumer = page.getGUI().getItems()[event.getSlot()].getAction();
+                    if (consumer != null) consumer.accept(event);
+                }
             }
         }
     }

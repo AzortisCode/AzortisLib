@@ -26,16 +26,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class PageImpl implements Page {
-    protected final Inventory inventory;
+    protected Inventory inventory;
     protected final String title;
     protected final GUI gui;
     protected final UUID uuid;
 
     public PageImpl(GUI gui, UUID uuid) {
-        this.inventory = gui.getInventory();
         this.title = gui.getTitle();
         this.uuid = uuid;
         this.gui = gui;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
     /**

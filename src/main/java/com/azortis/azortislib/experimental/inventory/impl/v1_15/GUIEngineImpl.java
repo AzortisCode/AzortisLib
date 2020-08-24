@@ -39,6 +39,7 @@ public class GUIEngineImpl implements GUIEngine {
 
     /**
      * Creates a page using the given GUI while also doing the necessary internal processes to register it.
+     * On first creation inventory is null - only create pages through GUI's.
      *
      * @param gui Creates a page with the given GUI
      * @return the page created
@@ -81,8 +82,9 @@ public class GUIEngineImpl implements GUIEngine {
      */
     @Override
     public @NotNull GUI createGUI(@NotNull GUIBuilder builder) {
-        // todo: make guibuilder
-        return null;
+        GUI gui = builder.build();
+        stringGUIMap.put(gui.getGUIName(), gui);
+        return gui;
     }
 
     /**
@@ -120,14 +122,5 @@ public class GUIEngineImpl implements GUIEngine {
     public @Nullable Template saveTemplate(@NotNull Map<String, Pair<Integer, Item>> items, String templateName) {
         // todo: save template in set folder
         return null;
-    }
-
-    /**
-     * Reloads pages that are open and are being handled by this GUIEngine.
-     */
-    @Override
-    public void reloadPages() {
-        // todo: reload all pages https://www.spigotmc.org/threads/opening-inventories-without-moving-cursor.42138/
-
     }
 }

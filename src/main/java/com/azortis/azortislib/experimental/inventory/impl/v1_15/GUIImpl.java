@@ -22,7 +22,9 @@ import com.azortis.azortislib.experimental.inventory.*;
 import com.azortis.azortislib.utils.FormatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -65,10 +67,24 @@ public class GUIImpl implements GUI {
     public @NotNull Inventory getInventory() {
         if (global) {
             if (inventory == null)
-                inventory = Bukkit.createInventory(GUIManager.getInstance().getEngine().createPage(this), items.length, FormatUtil.color(inventoryName));
+                inventory = generateInventory();
             return inventory;
         }
-        return Bukkit.createInventory(GUIManager.getInstance().getEngine().createPage(this), items.length, FormatUtil.color(inventoryName));
+
+        return generateInventory();
+    }
+
+    private Inventory generateInventory() {
+        Page p = GUIManager.getInstance().getEngine().createPage(this);
+        Inventory i = Bukkit.createInventory(p, items.length, FormatUtil.color(inventoryName));
+        p.setInventory(i);
+        ItemStack[] itemStacks = new ItemStack[items.length];
+        for (int i1 = 0; i1 < items.length; i1++) {
+            if (items[i1] == null) continue;
+            itemStacks[i1] = items[i1].getItemStack();
+        }
+        i.setContents(itemStacks);
+        return i;
     }
 
     /**
@@ -117,7 +133,7 @@ public class GUIImpl implements GUI {
      * @return the configuration of the inventory
      */
     @Override
-    public @NotNull Template getConfiguration() {
+    public @Nullable Template getConfiguration() {
         return template;
     }
 

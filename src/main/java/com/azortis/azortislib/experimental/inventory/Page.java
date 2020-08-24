@@ -67,4 +67,11 @@ public interface Page extends InventoryHolder {
     default void update() {
         getGUI().getUpdate().accept(this);
     }
+
+    /**
+     * Sets the inventory that the page holds.
+     *
+     * @param inventory inventory the page holds
+     */
+    void setInventory(Inventory inventory);
 }
