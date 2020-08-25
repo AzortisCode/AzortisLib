@@ -80,7 +80,7 @@ public class GUIImpl implements GUI {
         p.setInventory(i);
         ItemStack[] itemStacks = new ItemStack[items.length];
         for (int i1 = 0; i1 < items.length; i1++) {
-            if (items[i1] == null) continue;
+            if (items[i1] == null || items[i1].getItemStack() == null) continue;
             itemStacks[i1] = items[i1].getItemStack();
         }
         i.setContents(itemStacks);

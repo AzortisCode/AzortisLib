@@ -69,7 +69,6 @@ public interface GUIEngine extends Listener {
      */
     @NotNull
     GUI createGUI(@NotNull GUIBuilder builder);
-
     /**
      * Returns an immutable String GUI map. GUI's are mutable.
      *
@@ -120,7 +119,7 @@ public interface GUIEngine extends Listener {
             assert page != null;
             if (getPageRegistry().containsKey(page.getUUID())) {
                 // If intellij tells you this can't be null, it can. The array isn't null, but the items inside might be.
-                if (page.getGUI().getItems()[event.getSlot()] != null) {
+                if (page.getGUI().getItems()[event.getSlot()] != null && page.getGUI().getItems()[event.getSlot()].getItemStack() != null) {
                     Consumer<InventoryClickEvent> consumer = page.getGUI().getItems()[event.getSlot()].getAction();
                     if (consumer != null) consumer.accept(event);
                 }

@@ -60,6 +60,12 @@ public class GUIBuilder {
         return gui;
     }
 
+
+    public GUIBuilder addPlaceholder(int slot) {
+        pairMap.put("placeholder-" + slot, new MutablePair<>(slot, new Item(true)));
+        return this;
+    }
+
     public static class ItemBuilder {
         private final GUIBuilder builder;
         public ItemStack itemStack;

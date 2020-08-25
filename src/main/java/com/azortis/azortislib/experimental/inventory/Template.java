@@ -71,12 +71,12 @@ public class Template {
     }
 
     private Item loadItem(Map<String, Object> jsonItem) {
-        // todo: complete this - nbt data support
+        // todo: complete this - nbt data support - support placeholder items
         return null;
     }
 
     private Map<String, Object> unloadItem(Item item) {
-        // todo: complete this - nbt data support
+        // todo: complete this - nbt data support - support placeholder items
         return null;
     }
 

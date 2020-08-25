@@ -28,10 +28,17 @@ import java.util.function.Consumer;
 public class Item implements Cloneable {
     private final ItemStack itemStack;
     private final Consumer<InventoryClickEvent> action;
+    private boolean isAir = false;
 
     public Item(@NotNull ItemStack itemStack, @Nullable Consumer<InventoryClickEvent> action) {
         this.itemStack = itemStack;
         this.action = action;
+    }
+
+    public Item(boolean isAir) {
+        this.isAir = isAir;
+        itemStack = null;
+        action = null;
     }
 
     @Override
@@ -40,7 +47,7 @@ public class Item implements Cloneable {
         return new Item(this.itemStack.clone(), action);
     }
 
-    @NotNull
+    @Nullable
     public ItemStack getItemStack() {
         return itemStack;
     }
