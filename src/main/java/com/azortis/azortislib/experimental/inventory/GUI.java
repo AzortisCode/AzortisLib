@@ -18,13 +18,14 @@
 
 package com.azortis.azortislib.experimental.inventory;
 
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface GUI {
+public interface GUI extends Listener {
     /**
      * Returns the inventory of the gui.
      *

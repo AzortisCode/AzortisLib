@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class Item implements Cloneable {
+public final class Item implements Cloneable {
     private final ItemStack itemStack;
     private final Consumer<InventoryClickEvent> action;
     private boolean isAir = false;

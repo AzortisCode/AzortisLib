@@ -65,7 +65,8 @@ public interface Page extends InventoryHolder {
      * A method called every 5 ticks and is used to update the page.
      */
     default void update() {
-        getGUI().getUpdate().accept(this);
+        if (getGUI().getUpdate() != null)
+            getGUI().getUpdate().accept(this);
     }
 
     /**

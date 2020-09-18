@@ -21,6 +21,8 @@ package com.azortis.azortislib.experimental.inventory.impl.v1_15;
 import com.azortis.azortislib.experimental.inventory.*;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +31,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class GUIEngineImpl implements GUIEngine {
-    protected Map<UUID, Page> uuidPageMap;
-    protected Map<String, GUI> stringGUIMap;
+    protected final Map<UUID, Page> uuidPageMap;
+    protected final Map<String, GUI> stringGUIMap;
+    protected JavaPlugin plugin;
 
     public GUIEngineImpl() {
         uuidPageMap = new HashMap<>();
@@ -51,6 +54,18 @@ public class GUIEngineImpl implements GUIEngine {
         Page p = new PageImpl(gui, page);
         uuidPageMap.put(page, p);
         return p;
+    }
+
+    /**
+     * A default method which is used when the GUIEngine is first created. Used to register runnables and event listeners.
+     *
+     * @param plugin the plugin to use to initialize the engine.
+     */
+    @Override
+    public void initialize(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::update, 1, 5);
+        this.plugin = plugin;
     }
 
     /**
@@ -84,6 +99,7 @@ public class GUIEngineImpl implements GUIEngine {
     public @NotNull GUI createGUI(@NotNull GUIBuilder builder) {
         GUI gui = builder.build();
         stringGUIMap.put(gui.getGUIName(), gui);
+        Bukkit.getPluginManager().registerEvents(gui, plugin);
         return gui;
     }
 

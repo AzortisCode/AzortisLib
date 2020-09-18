@@ -35,7 +35,7 @@ public class GUIImpl implements GUI {
     protected final boolean configurable;
     protected final Consumer<Page> onUpdate;
     protected Inventory inventory;
-    protected Item[] items;
+    protected final Item[] items;
     protected String inventoryName;
 
     public GUIImpl(Template template, String name, boolean isGlobal, boolean isConfigurable, Consumer<Page> onUpdate) {

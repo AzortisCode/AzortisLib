@@ -50,44 +50,44 @@ public class Command {
     /**
      * Create a command instance to be registered using {@link CommandInjector}
      *
-     * @param name the command name.
-     * @param description the command description.
-     * @param usage the command usage.
-     * @param rawAliases list of aliases can include ones that have functions inside of them.
-     * @param permission the command permission.
-     * @param plugin the plugin that the command belongs to.
-     * @param executor the executor class of the command.
+     * @param name         the command name.
+     * @param description  the command description.
+     * @param usage        the command usage.
+     * @param rawAliases   list of aliases can include ones that have functions inside of them.
+     * @param permission   the command permission.
+     * @param plugin       the plugin that the command belongs to.
+     * @param executor     the executor class of the command.
      * @param tabCompleter the tabCompleter class of the command.
-     * @param subCommands a list of {@link SubCommandBuilder} to be build.
+     * @param subCommands  a list of {@link SubCommandBuilder} to be build.
      */
     public Command(@NotNull String name, String description, String usage, List<String> rawAliases, String permission, Plugin plugin
-            , @NotNull ICommandExecutor executor, ITabCompleter tabCompleter, Collection<SubCommandBuilder> subCommands){
+            , @NotNull ICommandExecutor executor, ITabCompleter tabCompleter, Collection<SubCommandBuilder> subCommands) {
         this.name = name.toLowerCase();
         this.executor = executor;
-        if(plugin == null){
+        if (plugin == null) {
             this.bukkitCommand = new BukkitCommand(this.name, this);
-        }else{
+        } else {
             this.bukkitCommand = new BukkitPluginCommand(name, this, plugin);
             this.plugin = plugin;
         }
-        if(description != null){
+        if (description != null) {
             this.description = description;
             bukkitCommand.setDescription(description);
             bukkitCommand.setUsage(usage);
         }
-        if(usage != null){
+        if (usage != null) {
             this.usage = usage;
         }
-        if(rawAliases != null) {
+        if (rawAliases != null) {
             List<String> processedAliases = new ArrayList<>();
             for (String rawAlias : rawAliases) {
-                if(!rawAlias.contains("-f")){
+                if (!rawAlias.contains("-f")) {
                     processedAliases.add(rawAlias.toLowerCase().trim());
                     break;
                     //I am going to keep this note here, for my future self to understand my current stupidity!
                     //This was a return one, and that's why I wasted a whole day finding it out!
                 }
-                if(this.aliasesMap == null)this.aliasesMap = new HashMap<>();
+                if (this.aliasesMap == null) this.aliasesMap = new HashMap<>();
                 Alias aliasFunction = new Alias(rawAlias);
                 this.aliasesMap.put(aliasFunction.getAlias(), aliasFunction);
                 processedAliases.add(aliasFunction.getAlias().toLowerCase());
@@ -95,15 +95,48 @@ public class Command {
             this.aliases = processedAliases;
             bukkitCommand.setAliases(aliases);
         }
-        if(permission != null){
+        if (permission != null) {
             this.permission = permission;
             bukkitCommand.setPermission(permission);
         }
-        if(tabCompleter != null)this.tabCompleter = tabCompleter;
-        if(subCommands != null) {
+        if (tabCompleter != null) this.tabCompleter = tabCompleter;
+        if (subCommands != null) {
             this.subCommands = new ArrayList<>();
             subCommands.forEach(subCommand -> this.subCommands.add(subCommand.setParent(this).build()));
         }
+    }
+
+    /**
+     * Called when the command is dispatched by bukkit.
+     *
+     * @param commandSender the command sender.
+     * @param label         the label used.
+     * @param args          the command arguments.
+     * @return successful
+     */
+    private boolean executeCommand(CommandSender commandSender, String label, String[] args) {
+        if (args.length >= 1 && subCommands != null) {
+            for (SubCommand subCommand : subCommands) {
+                if (args[0].equalsIgnoreCase(subCommand.getName()) || (subCommand.hasAliases() && subCommand.getAliases().contains(args[0].toLowerCase()))) {
+                    List<String> argsList = new LinkedList<>(Arrays.asList(args));
+                    argsList.remove(0);
+                    String[] subArgs = argsList.toArray(new String[0]);
+                    return subCommand.execute(commandSender, label, subArgs);
+                }
+            }
+        }
+        return executor.onCommand(commandSender, this, label, args);
+    }
+
+    /**
+     * Get a single name
+     *
+     * @param alias the alias
+     * @return the {@link Alias}
+     */
+    @Nullable
+    public Alias getAlias(String alias) {
+        return aliasesMap.get(alias);
     }
 
     /**
@@ -112,7 +145,7 @@ public class Command {
     private class BukkitCommand extends org.bukkit.command.Command {
         private final Command parent;
 
-        BukkitCommand(String name, Command parent){
+        BukkitCommand(String name, Command parent) {
             super(name);
             this.parent = parent;
         }
@@ -123,62 +156,11 @@ public class Command {
 
         @Override
         public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, String[] args, Location location) throws IllegalArgumentException {
-            if(parent.tabCompleter != null)return parent.tabCompleter.onTabComplete(commandSender, parent, alias, args, location);
+            if (parent.tabCompleter != null)
+                return parent.tabCompleter.onTabComplete(commandSender, parent, alias, args, location);
             return new ArrayList<>();
         }
 
-    }
-
-    /**
-     * The {@link org.bukkit.command.Command} class is a plugin is specified.
-     */
-    private class BukkitPluginCommand extends org.bukkit.command.Command implements PluginIdentifiableCommand{
-        private final Command parent;
-        private final Plugin plugin;
-
-        public BukkitPluginCommand(String name, Command parent, Plugin plugin){
-            super(name);
-            this.parent = parent;
-            this.plugin = plugin;
-        }
-
-        public boolean execute(@NotNull CommandSender commandSender, String label, String[] args) {
-            return executeCommand(commandSender, label, args);
-        }
-
-
-        @Override
-        public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, String[] args, Location location) throws IllegalArgumentException {
-            if(parent.tabCompleter != null)return parent.tabCompleter.onTabComplete(commandSender, parent, alias, args, location);
-            return new ArrayList<>();
-        }
-
-        public @NotNull Plugin getPlugin() {
-            return this.plugin;
-        }
-
-    }
-
-    /**
-     * Called when the command is dispatched by bukkit.
-     *
-     * @param commandSender the command sender.
-     * @param label the label used.
-     * @param args the command arguments.
-     * @return successful
-     */
-    private boolean executeCommand(CommandSender commandSender, String label, String[] args) {
-        if(args.length >= 1 && subCommands != null){
-            for (SubCommand subCommand : subCommands){
-                if(args[0].equalsIgnoreCase(subCommand.getName()) || (subCommand.hasAliases() && subCommand.getAliases().contains(args[0].toLowerCase()))){
-                    List<String> argsList = new LinkedList<>(Arrays.asList(args));
-                    argsList.remove(0);
-                    String[] subArgs = argsList.toArray(new String[0]);
-                    return subCommand.execute(commandSender, label, subArgs);
-                }
-            }
-        }
-        return executor.onCommand(commandSender, this, label, args);
     }
 
     /**
@@ -292,13 +274,40 @@ public class Command {
     }
 
     /**
-     * Get a single name
-     *
-     * @param alias the alias
-     * @return the {@link Alias}
+     * The {@link org.bukkit.command.Command} class is a plugin is specified.
      */
-    @Nullable
-    public Alias getAlias(String alias){
-        return aliasesMap.get(alias);
+    private class BukkitPluginCommand extends org.bukkit.command.Command implements PluginIdentifiableCommand {
+        private final Command parent;
+        private final Plugin plugin;
+
+        public BukkitPluginCommand(String name, Command parent, Plugin plugin) {
+            super(name);
+            this.parent = parent;
+            this.plugin = plugin;
+        }
+
+        public boolean execute(@NotNull CommandSender commandSender, String label, String[] args) {
+            return executeCommand(commandSender, label, args);
+        }
+
+
+        @Override
+        public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, String[] args, Location location) throws IllegalArgumentException {
+            if (parent.tabCompleter != null)
+                return parent.tabCompleter.onTabComplete(commandSender, parent, alias, args, location);
+            return new ArrayList<>();
+        }
+
+        @Override
+        public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, String[] args) throws IllegalArgumentException {
+            if (parent.tabCompleter != null)
+                return parent.tabCompleter.onTabComplete(commandSender, parent, alias, args, null);
+            return new ArrayList<>();
+        }
+
+        public @NotNull Plugin getPlugin() {
+            return this.plugin;
+        }
+
     }
 }

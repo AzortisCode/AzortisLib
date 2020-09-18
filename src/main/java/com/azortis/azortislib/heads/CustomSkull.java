@@ -40,6 +40,7 @@ public class CustomSkull {
      * @return the itemstack of the skull with the custom skin.
      */
     public static ItemStack getCustomSkull(String url) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         PropertyMap propertyMap = profile.getProperties();
         if (propertyMap == null) {
@@ -47,7 +48,6 @@ public class CustomSkull {
         }
         byte[] encodedData = base64.encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
         propertyMap.put("textures", new Property("textures", new String(encodedData)));
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta headMeta = head.getItemMeta();
         // We assert that this is not null due to how ItemStacks work. Only ItemStacks
         // of Material.AIR can have null metadata and we obviously know this isn't air, but instead a player skull.
