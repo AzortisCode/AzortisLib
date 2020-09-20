@@ -33,14 +33,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class GUIBuilder {
-    public final Map<String, Pair<Integer, Item>> pairMap;
+    public Map<String, Pair<Integer, Item>> pairMap;
     public boolean isGlobal;
     public boolean isConfigurable;
     public String uniqueName;
     public String inventoryTitle;
     public Consumer<Page> update;
     public int inventorySize;
-    private Class<? extends GUI> buildCustom;
+    protected Class<? extends GUI> buildCustom;
 
     public GUIBuilder() {
         pairMap = new HashMap<>();
@@ -87,7 +87,7 @@ public class GUIBuilder {
     }
 
     public static class ItemBuilder {
-        private final GUIBuilder builder;
+        protected final GUIBuilder builder;
         public ItemStack itemStack;
         public Consumer<InventoryClickEvent> action;
         public String itemName;

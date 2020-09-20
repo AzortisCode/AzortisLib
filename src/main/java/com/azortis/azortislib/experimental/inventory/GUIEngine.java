@@ -111,7 +111,6 @@ public interface GUIEngine extends Listener {
      *
      * @param event the event to use
      */
-    // todo check what happens when clicked outside of the inventory
     @EventHandler
     default void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Page) {

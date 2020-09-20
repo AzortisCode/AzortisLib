@@ -18,10 +18,9 @@
 
 package com.azortis.azortislib.experimental.inventory.impl.v1_15;
 
-import com.azortis.azortislib.experimental.inventory.Item;
-import com.azortis.azortislib.experimental.inventory.Page;
-import com.azortis.azortislib.experimental.inventory.PageableGUI;
-import com.azortis.azortislib.experimental.inventory.Template;
+import com.azortis.azortislib.experimental.inventory.*;
+import com.azortis.azortislib.utils.FormatUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,14 +35,18 @@ public class PageableGUIImpl extends GUIImpl implements PageableGUI {
     private Item[][] items;
     private int pages;
 
-    // todo: make pageable template.
-    public PageableGUIImpl(Template template, String name, boolean isGlobal, boolean isConfigurable, Consumer<Page> onUpdate, int pages) {
+    public PageableGUIImpl(Template template, String name, boolean isGlobal, boolean isConfigurable, Consumer<Page> onUpdate, int pages, int pageSize) {
         super(template, name, isGlobal, isConfigurable, onUpdate);
-        pageSize = template.getItems().length;
+        this.pageSize = pageSize;
         this.pages = pages;
         inventoryNames = new ArrayList<>();
         inventoryList = new ArrayList<>();
-        // todo remember to initialize items 2d array here w/ pageable template.
+        items = new Item[pages][pageSize];
+
+        Item[] fill = template.getItems();
+        for (int p = 0; p < pages; p++) {
+            if (pageSize >= 0) System.arraycopy(fill, (p * pageSize), items[p], 0, pageSize);
+        }
     }
 
     /**
@@ -63,8 +66,10 @@ public class PageableGUIImpl extends GUIImpl implements PageableGUI {
     }
 
     protected void expandItemsArray() {
-        Item[][] temp = new Item[pages][items[0].length]; // todo: finish this
-
+        Item[][] newArr = new Item[pages][pageSize];
+        for (int p = 0; p < pages; p++)
+            System.arraycopy(items[p], 0, newArr[p], 0, items[p].length);
+        items = newArr;
     }
 
     /**
@@ -123,7 +128,17 @@ public class PageableGUIImpl extends GUIImpl implements PageableGUI {
      */
     @Override
     public Inventory getInventory(int page) {
-        return null; // todo: finish this
+        if (inventoryList.size() > page) {
+            return inventoryList.get(page);
+        } else if (pages > page) {
+            Page p = GUIManager.getInstance().getEngine().createPage(this);
+            Inventory i = Bukkit.createInventory(p, pageSize, FormatUtil.color(inventoryNames.get(page)));
+            p.setInventory(i);
+            inventoryList.set(page, i);
+            return i;
+
+        }
+        return null;
     }
 
     /**

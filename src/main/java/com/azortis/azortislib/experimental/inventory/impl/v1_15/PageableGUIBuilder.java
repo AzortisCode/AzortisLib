@@ -18,27 +18,62 @@
 
 package com.azortis.azortislib.experimental.inventory.impl.v1_15;
 
-import com.azortis.azortislib.experimental.inventory.PageableGUI;
-import com.azortis.azortislib.inventory.item.Item;
+import com.azortis.azortislib.experimental.inventory.*;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class PageableGUIBuilder extends GUIBuilder {
+    private final Map<String, Pair<Integer, Pair<Integer, Item>>> pairMap;
     public int pages;
-    public int pageSize;
-    private Map<String, Pair<Integer, Pair<Integer, Item>>> pairMap;
+
+    public PageableGUIBuilder() {
+        this.pairMap = new HashMap<>();
+    }
 
     @Override
-    public GUIBuilder addPlaceholder(int slot) {
-        return null; // todo: make this only add to the first page and make paged alternative for adding to multiple pages
+    public PageableGUIBuilder addPlaceholder(int slot) {
+        pairMap.values().removeIf((integerItemPair -> integerItemPair.getKey() == slot));
+        pairMap.put("placeholder-" + slot + "-" + 1,
+                new MutablePair<>(1,
+                        new MutablePair<>(slot, new com.azortis.azortislib.experimental.inventory.Item(true))));
+        return this;
     }
 
     @Override
     public PageableGUI build() {
-        return null; // todo make this return actual pageable gui.
+        Map<String, Pair<Integer, Item>> transformedMap = new HashMap<>();
+        pairMap.forEach((s, integerPairPair) -> transformedMap.put(s,
+                new MutablePair<>((integerPairPair.getKey() * inventorySize) + integerPairPair.getValue().getKey(),
+                        integerPairPair.getValue().getValue())));
+        PageableTemplate template = new PageableTemplate(null, transformedMap, isConfigurable, inventoryTitle,
+                inventorySize);
+        PageableGUI gui;
+        if (buildCustom != null) {
+            try {
+                gui = (PageableGUI) buildCustom.getConstructor(Template.class, String.class, boolean.class, boolean.class, Consumer.class, int.class, int.class)
+                        .newInstance(template, uniqueName, isGlobal, isConfigurable, update, pages, inventorySize);
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+                gui = new PageableGUIImpl(template, uniqueName, isGlobal, isConfigurable, update, pages, inventorySize);
+                System.out.println("Warning - Could not find or instantiate constructor for class "
+                        + buildCustom + ", using default implementation for pageable gui.");
+                e.printStackTrace();
+            }
+        } else {
+            gui = new PageableGUIImpl(template, uniqueName, isGlobal, isConfigurable, update, pages, inventorySize);
+        }
+        gui.setInventoryName(inventoryTitle);
+        return gui;
     }
 
+    @Override
+    public ItemBuilder item() {
+        return new PageableItemBuilder(this);
+    }
 
     public static class PageableItemBuilder extends ItemBuilder {
         public int page;
@@ -48,8 +83,11 @@ public class PageableGUIBuilder extends GUIBuilder {
         }
 
         @Override
-        public GUIBuilder add() {
-            return null; // todo make this add to only actual page and slot
+        public PageableGUIBuilder add() {
+            if (itemStack == null) return (PageableGUIBuilder) builder;
+            builder.with($ -> ((PageableGUIBuilder) $).pairMap.put(itemName,
+                    new MutablePair<>(page, new MutablePair<>(slot, new Item(itemStack, action)))));
+            return (PageableGUIBuilder) builder;
         }
     }
 }
