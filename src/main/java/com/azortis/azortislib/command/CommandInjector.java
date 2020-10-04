@@ -74,6 +74,34 @@ public class CommandInjector {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static void removeCommand(String command) {
+        try {
+            Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            SimpleCommandMap commandMap = (SimpleCommandMap) commandMapField.get(Bukkit.getServer());
+
+            Map<String, org.bukkit.command.Command> knownCommands;
+            Field knownCommandsField = null;
+            if (isVersionLaterThanCurrent()) {
+                // Version is 1.16 or later - use new method
+                knownCommands = (Map<String, org.bukkit.command.Command>) Reflections
+                        .getMethod(commandMap.getClass(), "getKnownCommands").invoke(commandMap);
+            } else {
+                knownCommandsField = commandMap.getClass().getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                knownCommands = (Map<String, org.bukkit.command.Command>) knownCommandsField.get(commandMap);
+            }
+            knownCommands.remove(command);
+            if (knownCommandsField != null)
+                knownCommandsField.setAccessible(false);
+
+            commandMapField.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private static boolean isVersionLaterThanCurrent() {
         String[] checked = CommandInjector.V1_16.split("_");
         String[] current = CommandInjector.VERSION.split("_");
