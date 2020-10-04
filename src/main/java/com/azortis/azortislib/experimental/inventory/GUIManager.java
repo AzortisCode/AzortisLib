@@ -1,70 +1,47 @@
-/*
- * An open source utilities library used for Azortis plugins.
- *     Copyright (C) 2019  Azortis
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.azortis.azortislib.experimental.inventory;
 
-import com.azortis.azortislib.experimental.inventory.impl.v1_15.GUIEngineImpl;
-import org.bukkit.entity.Player;
+import com.azortis.azortislib.experimental.inventory.item.Item;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-// todo: Implement Placeholder support!
-public class GUIManager {
-    private static JavaPlugin PLUGIN_REF;
-    private final GUIEngine engine;
+// todo: Make an animator of some sort.
+public class GUIManager implements Listener {
 
-    private GUIManager(JavaPlugin plugin) {
-        if (plugin == null) throw new NullPointerException("Plugin reference is null!");
-        engine = new GUIEngineImpl();
-        engine.initialize(plugin);
+    public GUIManager(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-
-    public static GUIManager getInstance() throws NullPointerException {
-        return GUIManagerSingleton.INSTANCE;
+    @EventHandler
+    public void onPlayerClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() != null &&
+                event.getClickedInventory().getHolder() instanceof View) {
+            View view = (View) event.getInventory().getHolder();
+            if (view.getPage().getItems()[event.getSlot()] != null) {
+                Item item = view.getPage().getItems()[event.getSlot()];
+                if (item.getEventConsumer() != null) item.getEventConsumer().accept(event, view);
+            }
+        }
     }
 
-    public static GUIManager getInstance(JavaPlugin plugin) {
-        PLUGIN_REF = plugin;
-        return GUIManagerSingleton.INSTANCE;
+    @EventHandler
+    public void onPlayerClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof View) {
+            View view = (View) event.getInventory().getHolder();
+            if (view.getPage().getCloseAction() != null)
+                view.getPage().getCloseAction().accept(event, view);
+        }
     }
 
-    /**
-     * Seamlessly open an inventory without moving the cursor.
-     *
-     * @param player the player to open the inventory for
-     * @param gui    the gui to use
-     */
-    public static void openInventorySeamless(Player player, GUI gui) {
-        // todo https://www.spigotmc.org/threads/opening-inventories-without-moving-cursor.42138/
-
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerCloseMonitor(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof View) {
+            ((View) event.getInventory().getHolder()).getPage()
+                    .disposeView((View) event.getInventory().getHolder());
+        }
     }
-
-    /**
-     * Future-proofed method for getting GUIEngines with multi-version support & async support.
-     *
-     * @return instance of GUIEngine
-     */
-    public GUIEngine getEngine() {
-        return engine;
-    }
-
-    private static class GUIManagerSingleton {
-        public static final GUIManager INSTANCE = new GUIManager(PLUGIN_REF);
-    }
-
 }
