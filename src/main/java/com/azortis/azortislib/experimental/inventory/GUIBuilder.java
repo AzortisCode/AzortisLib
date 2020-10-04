@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class GUIBuilder {
-    private GUI gui;
+    private final GUI gui;
 
     public GUIBuilder(String uniqueName) {
         gui = new GUI(uniqueName);
@@ -47,7 +47,7 @@ public class GUIBuilder {
         public GUIBuilder with(Consumer<PageBuilder> pageBuilderConsumer) {
             pageBuilderConsumer.accept(this);
             Page p = new Page(guiBuilder.gui, page, name, isGlobal, pageSize, closeAction);
-
+            guiBuilder.gui.getPages().add(p);
             return guiBuilder;
         }
     }
