@@ -16,19 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.inventory.item;
+package com.azortis.azortislib.inventory;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public enum SerializableItemOptions {
-    /**
-     * An indicator that this item is a filler item and will be filled in any of the empty slots.
-     * To prevent spam the slots list won't have every slot a filler is actually in.
-     */
-    FILLER,
-    /**
-     * This is a dummy item, which is automatically replaced by the guis with the actual items. i.e. If this were an
-     * automatically filling up paginated gui, every item that is marked as a dummy item will be replaced with the actual
-     * input after filling up.
-     */
-    DUMMY_ITEM
+public class GUI {
+    private final List<Page> pages;
+    private final String name;
+
+    public GUI(String name) {
+        this.name = name;
+        pages = new ArrayList<>();
+    }
+
+    public List<Page> getPages() {
+        return pages;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

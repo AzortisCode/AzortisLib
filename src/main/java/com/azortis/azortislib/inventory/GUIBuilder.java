@@ -16,9 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.inventory;
+package com.azortis.azortislib.inventory;
 
-import com.azortis.azortislib.experimental.inventory.item.Item;
+import com.azortis.azortislib.inventory.item.Item;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.function.BiConsumer;

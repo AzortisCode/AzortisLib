@@ -18,56 +18,37 @@
 
 package com.azortis.azortislib.inventory.item;
 
-import com.azortis.azortislib.inventory.exceptions.InvalidItemException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
-// todo: document this
 @SuppressWarnings("all")
-public class ItemBuilder<T extends Item> {
-    private T item;
+public class ItemBuilder {
+    private ItemStack item;
 
-    // This is only called when the item is most definitely of type Item, this saves performance by not having to deal with reflection.
     private ItemBuilder(Material material) {
-        item = (T) new Item(material);
+        item = new ItemStack(material);
     }
 
-    public ItemBuilder(Material material, Class<T> type) {
-        Constructor<T> constructor;
-        try {
-            constructor = type.getConstructor(Material.class);
-        } catch (NoSuchMethodException e) {
-            throw new InvalidItemException("This item does not have the constructor with " + type + "(org.bukkit.Material)");
-        }
-        try {
-            item = constructor.newInstance(material);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    private ItemBuilder(ItemStack stack) {
+        this.item = stack;
     }
 
-    public static ItemBuilder<Item> start(Material material) {
-        return new ItemBuilder<>(material);
+    public static ItemBuilder start(Material material) {
+        return new ItemBuilder(material);
     }
 
-    public static <T extends Item> ItemBuilder<T> start(Material material, Class<T> type) {
-        return new ItemBuilder<>(material, type);
+    public static ItemBuilder start(ItemStack stack) {
+        return new ItemBuilder(stack);
     }
 
-    public void setConsumer(Consumer<InventoryClickEvent> consumer) {
-        item.setAction(consumer);
-    }
-
-    public ItemBuilder<T> name(@NotNull String name) {
+    public ItemBuilder name(@NotNull String name) {
         ItemMeta stackMeta = item.getItemMeta();
         assert stackMeta != null;
         stackMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
@@ -75,13 +56,13 @@ public class ItemBuilder<T extends Item> {
         return this;
     }
 
-    public ItemBuilder<T> amount(int amount) {
+    public ItemBuilder amount(int amount) {
         item.setAmount(amount);
         return this;
     }
 
 
-    public ItemBuilder<T> lore(String... lore) {
+    public ItemBuilder lore(String... lore) {
         for (int i = 0; i < lore.length; i++) {
             lore[i] = ChatColor.translateAlternateColorCodes('&', lore[i]);
         }
@@ -94,9 +75,10 @@ public class ItemBuilder<T extends Item> {
     }
 
 
-    public ItemBuilder<T> lore(List<String> lore) {
+    public ItemBuilder lore(List<String> lore) {
+        List<String> list = new ArrayList<>(lore);
         for (int i = 0; i < lore.size(); i++) {
-            lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+            list.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
         }
 
         ItemMeta stackMeta = item.getItemMeta();
@@ -107,18 +89,18 @@ public class ItemBuilder<T extends Item> {
     }
 
 
-    public ItemBuilder<T> data(short data) {
+    public ItemBuilder data(short data) {
         item.setDurability(data);
         return this;
     }
 
 
-    public ItemBuilder<T> durability(short durability) {
+    public ItemBuilder durability(short durability) {
         item.setDurability(durability);
         return this;
     }
 
-    public T build() {
+    public ItemStack build() {
         return item;
     }
 }

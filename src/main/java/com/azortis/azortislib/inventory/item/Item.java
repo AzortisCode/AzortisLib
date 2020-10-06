@@ -18,173 +18,40 @@
 
 package com.azortis.azortislib.inventory.item;
 
-import org.bukkit.Material;
+import com.azortis.azortislib.inventory.View;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-public class Item extends ItemStack implements Cloneable {
-    protected transient Consumer<InventoryClickEvent> action = event -> event.setCancelled(true);
+public class Item extends ItemStack {
+    private String uniqueName;
+    private BiConsumer<InventoryClickEvent, View> eventConsumer;
 
-    /**
-     * Defaults stack size to 1, with no extra data.
-     * <p>
-     * <b>IMPORTANT: An <i>Item</i>Stack is only designed to contain
-     * <i>items</i>. Do not use this class to encapsulate Materials for which
-     * {@link Material#isItem()} returns false.</b>
-     *
-     * @param type   item material
-     * @param action {@link Consumer<InventoryClickEvent>} the action that will be played when the item is clicked.
-     */
-    public Item(@NotNull Material type, @NotNull Consumer<InventoryClickEvent> action) {
-        super(type);
-        this.action = action;
-    }
-
-    /**
-     * An item stack with no extra data.
-     * <p>
-     * <b>IMPORTANT: An <i>Item</i>Stack is only designed to contain
-     * <i>items</i>. Do not use this class to encapsulate Materials for which
-     * {@link Material#isItem()} returns false.</b>
-     *
-     * @param type   item material
-     * @param amount stack size
-     * @param action {@link Consumer<InventoryClickEvent>} the action that will be played when the item is clicked.
-     */
-    public Item(@NotNull Material type, int amount, @NotNull Consumer<InventoryClickEvent> action) {
-        super(type, amount);
-        this.action = action;
-    }
-
-    /**
-     * Defaults stack size to 1, with no extra data.
-     * <p>
-     * <b>IMPORTANT: An <i>Item</i>Stack is only designed to contain
-     * <i>items</i>. Do not use this class to encapsulate Materials for which
-     * {@link Material#isItem()} returns false.</b>
-     *
-     * @param type item material
-     */
-    public Item(@NotNull Material type) {
-        super(type);
-    }
-
-    /**
-     * An item stack with no extra data.
-     * <p>
-     * <b>IMPORTANT: An <i>Item</i>Stack is only designed to contain
-     * <i>items</i>. Do not use this class to encapsulate Materials for which
-     * {@link Material#isItem()} returns false.</b>
-     *
-     * @param type   item material
-     * @param amount stack size
-     */
-    public Item(@NotNull Material type, int amount) {
-        super(type, amount);
-    }
-
-    /**
-     * An item stack with the specified damage / durability
-     *
-     * @param type   item material
-     * @param amount stack size
-     * @param damage durability / damage
-     * @deprecated see {@link #setDurability(short)}
-     */
-    public Item(@NotNull Material type, int amount, short damage) {
-        super(type, amount, damage);
-    }
-
-    /**
-     * @param type   the type
-     * @param amount the amount in the stack
-     * @param damage the damage value of the item
-     * @param data   the data value or null
-     * @deprecated this method uses an ambiguous data byte object
-     */
-    public Item(@NotNull Material type, int amount, short damage, @Nullable Byte data) {
-        super(type, amount, damage, data);
-    }
-
-    /**
-     * Creates a new item stack derived from the specified stack
-     *
-     * @param stack the stack to copy
-     * @throws IllegalArgumentException if the specified stack is null or
-     *                                  returns an item meta not created by the item factory
-     */
-    public Item(@NotNull ItemStack stack) throws IllegalArgumentException {
+    public Item(ItemStack stack, String uniqueName, BiConsumer<InventoryClickEvent, View> eventConsumer) throws IllegalArgumentException {
         super(stack);
+        this.uniqueName = uniqueName;
+        this.eventConsumer = eventConsumer;
     }
 
-    /**
-     * An item stack with the specified damage / durability
-     *
-     * @param type   item material
-     * @param amount stack size
-     * @param damage durability / damage
-     * @param action {@link Consumer<InventoryClickEvent>} the action that will be played when the item is clicked.
-     * @deprecated see {@link #setDurability(short)}
-     */
-    public Item(@NotNull Material type, int amount, short damage, @NotNull Consumer<InventoryClickEvent> action) {
-        super(type, amount, damage);
-        this.action = action;
+    public Item(String uniqueName, BiConsumer<InventoryClickEvent, View> eventConsumer) {
+        this.uniqueName = uniqueName;
+        this.eventConsumer = eventConsumer;
     }
 
-    /**
-     * @param type   the type
-     * @param amount the amount in the stack
-     * @param damage the damage value of the item
-     * @param data   the data value or null
-     * @param action {@link Consumer<InventoryClickEvent>} the action that will be played when the item is clicked.
-     * @deprecated this method uses an ambiguous data byte object
-     */
-    public Item(@NotNull Material type, int amount, short damage, @Nullable Byte data, @NotNull Consumer<InventoryClickEvent> action) {
-        super(type, amount, damage, data);
-        this.action = action;
+    public String getUniqueName() {
+        return uniqueName;
     }
 
-    /**
-     * Creates a new item stack derived from the specified stack
-     *
-     * @param action {@link Consumer<InventoryClickEvent>} the action that will be played when the item is clicked.
-     * @param stack  the stack to copy
-     * @throws IllegalArgumentException if the specified stack is null or
-     *                                  returns an item meta not created by the item factory
-     */
-    public Item(@NotNull ItemStack stack, @NotNull Consumer<InventoryClickEvent> action) throws IllegalArgumentException {
-        super(stack);
-        this.action = action;
+    public void setUniqueName(String uniqueName) {
+        this.uniqueName = uniqueName;
     }
 
-    /**
-     * Gets the action which should be called when the item is clicked.
-     *
-     * @return {@link Consumer<InventoryClickEvent>} the action to consume
-     */
-    @NotNull
-    public Consumer<InventoryClickEvent> getAction() {
-        return action;
+    public BiConsumer<InventoryClickEvent, View> getEventConsumer() {
+        return eventConsumer;
     }
 
-    /**
-     * Sets the action of the item when clicked.
-     *
-     * @param action {@link Consumer<InventoryClickEvent>} the action
-     */
-    public void setAction(@NotNull Consumer<InventoryClickEvent> action) {
-        this.action = action;
+    public void setEventConsumer(BiConsumer<InventoryClickEvent, View> eventConsumer) {
+        this.eventConsumer = eventConsumer;
     }
-
-    @Override
-    public @NotNull Item clone() {
-        Item item = (Item) super.clone();
-        item.action = this.action;
-        return item;
-    }
-
 }

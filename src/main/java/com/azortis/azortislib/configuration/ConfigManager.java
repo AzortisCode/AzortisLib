@@ -16,18 +16,29 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.inventory.exceptions;
+package com.azortis.azortislib.configuration;
 
-public class TemplateNotSupportedException extends RuntimeException {
-    /**
-     * Constructs a new exception with the specified detail message.  The
-     * cause is not initialized, and may subsequently be initialized by
-     * a call to {@link #initCause}.
-     *
-     * @param message the detail message. The detail message is saved for
-     *                later retrieval by the {@link #getMessage()} method.
-     */
-    public TemplateNotSupportedException(String message) {
-        super(message);
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.bukkit.plugin.java.JavaPlugin;
+
+@SuppressWarnings("all")
+public class ConfigManager {
+
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private final JavaPlugin plugin;
+
+    public ConfigManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public <T> Config<T> loadConfig(String name, T defaults) {
+        return new Config<T>(name, gson, plugin, defaults);
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }
+
+
