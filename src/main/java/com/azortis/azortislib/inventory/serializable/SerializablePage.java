@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.io.Serializable;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class SerializablePage implements Serializable {
     private final int page;
@@ -42,7 +43,7 @@ public class SerializablePage implements Serializable {
         this.pageSize = pageSize;
     }
 
-    public static SerializablePage fromPage(Page page) {
+    public static SerializablePage fromPage(Page<?> page) {
         SerializableItem[] items = new SerializableItem[page.getItems().length];
         for (int i = 0; i < page.getItems().length; i++) {
             items[i] = SerializableItem.fromItem(page.getItems()[i], i);
@@ -70,8 +71,10 @@ public class SerializablePage implements Serializable {
         return pageSize;
     }
 
-    public Page toPage(GUI gui, BiConsumer<InventoryClickEvent, View>[] itemActions, BiConsumer<InventoryCloseEvent, View> closeAction) {
-        Page page = new Page(gui, this.page, this.name, this.isGlobal, this.pageSize, closeAction);
+    // todo: Make this support custom views.
+    public <T extends View<T>> Page<T> toPage(GUI gui, BiConsumer<InventoryClickEvent, T>[] itemActions, BiConsumer<InventoryCloseEvent, T> closeAction,
+                             Function<Page<T>, T> constructView) {
+        Page<T> page = new Page<T>(gui, this.page, this.name, this.isGlobal, this.pageSize, closeAction, constructView);
         for (int i = 0; i < items.length; i++) {
             page.getItems()[i] = items[i].toItem(page, itemActions[i]);
         }

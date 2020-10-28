@@ -24,17 +24,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiConsumer;
 
-public class Item extends ItemStack {
+public class Item<T extends View<T>> extends ItemStack {
     private String uniqueName;
-    private BiConsumer<InventoryClickEvent, View> eventConsumer;
+    private BiConsumer<InventoryClickEvent, T> eventConsumer;
 
-    public Item(ItemStack stack, String uniqueName, BiConsumer<InventoryClickEvent, View> eventConsumer) throws IllegalArgumentException {
+    public Item(ItemStack stack, String uniqueName, BiConsumer<InventoryClickEvent, T> eventConsumer) throws IllegalArgumentException {
         super(stack);
         this.uniqueName = uniqueName;
         this.eventConsumer = eventConsumer;
     }
 
-    public Item(String uniqueName, BiConsumer<InventoryClickEvent, View> eventConsumer) {
+    public Item(String uniqueName, BiConsumer<InventoryClickEvent, T> eventConsumer) {
         this.uniqueName = uniqueName;
         this.eventConsumer = eventConsumer;
     }
@@ -47,11 +47,11 @@ public class Item extends ItemStack {
         this.uniqueName = uniqueName;
     }
 
-    public BiConsumer<InventoryClickEvent, View> getEventConsumer() {
+    public BiConsumer<InventoryClickEvent, T> getEventConsumer() {
         return eventConsumer;
     }
 
-    public void setEventConsumer(BiConsumer<InventoryClickEvent, View> eventConsumer) {
+    public void setEventConsumer(BiConsumer<InventoryClickEvent, T> eventConsumer) {
         this.eventConsumer = eventConsumer;
     }
 }

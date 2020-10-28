@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class SerializableGUI implements Serializable {
     private final ImmutableList<SerializablePage> pages;
@@ -55,11 +56,12 @@ public class SerializableGUI implements Serializable {
         return name;
     }
 
-    public GUI toGUI(BiConsumer<InventoryClickEvent, View>[][] itemActions,
-                     List<BiConsumer<InventoryCloseEvent, View>> pageActions) {
+    public  <T extends View<T>> GUI toGUI(BiConsumer<InventoryClickEvent, T>[][] itemActions,
+                     List<BiConsumer<InventoryCloseEvent, T>> pageActions,
+                     List<Function<Page<T>, T>> constructViews) {
         GUI gui = new GUI(name);
         for (int i = 0; i < pages.size(); i++) {
-            gui.getPages().add(pages.get(i).toPage(gui, itemActions[i], pageActions.get(i)));
+            gui.getPages().add(pages.get(i).toPage(gui, itemActions[i], pageActions.get(i), constructViews.get(i)));
         }
         return gui;
     }

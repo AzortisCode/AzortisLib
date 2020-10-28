@@ -28,6 +28,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 // todo: Make an animator of some sort.
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class GUIManager implements Listener {
 
     public GUIManager(JavaPlugin plugin) {
