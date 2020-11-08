@@ -22,22 +22,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class View<T extends View<T>> implements InventoryHolder {
+public class View implements InventoryHolder {
     private Inventory inventory;
-    @NotNull
-    private Page<T> page;
+    private Page page;
 
-    public View(@NotNull  Page<T> page) {
+    public View(Page page) {
         this.page = page;
         inventory = Bukkit.createInventory(this, page.getPageSize(),
                 ChatColor.translateAlternateColorCodes('&', page.getName()));
         inventory.setContents(page.getItems());
     }
-    @Nullable
-    public Page<T> getPage() {
+
+    public Page getPage() {
         return page;
     }
 
@@ -47,7 +44,7 @@ public class View<T extends View<T>> implements InventoryHolder {
     }
 
     @Override
-    public @NotNull Inventory getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 }

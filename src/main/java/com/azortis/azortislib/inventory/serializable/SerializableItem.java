@@ -98,13 +98,13 @@ public class SerializableItem implements Serializable {
         return data;
     }
 
-    public <T extends View<T>> Item<T> toItem(Page<T> page, BiConsumer<InventoryClickEvent, T> action) {
+    public Item toItem(Page page, BiConsumer<InventoryClickEvent, View> action) {
         ItemBuilder builder = ItemBuilder.start(Material.getMaterial(material))
                 .amount(amount)
                 .data((short) data)
                 .lore(lore)
                 .name(name);
-        Item<T> item = new Item<>(builder.build(), name, action);
+        Item item = new Item(builder.build(), name, action);
         Map<Enchantment, Integer> enchantmentIntegerMap = new HashMap<>();
         for (Map.Entry<String, Integer> stringIntegerEntry : enchantments.entrySet()) {
             enchantmentIntegerMap.put(Enchantment.getByName(stringIntegerEntry.getKey()), stringIntegerEntry.getValue());

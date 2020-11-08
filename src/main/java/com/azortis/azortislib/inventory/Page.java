@@ -24,20 +24,18 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
-public class Page<T extends View<T>> {
+public class Page {
     private final GUI gui;
     private final int page;
     private final String name;
     private final boolean isGlobal;
     private final Item[] items;
     private final int pageSize;
-    private final Set<T> views;
-    private Function<Page<T>, T> constructView;
-    private BiConsumer<InventoryCloseEvent, T> closeAction;
-    public Page(GUI gui, int page, String name, boolean isGlobal, int pageSize, BiConsumer<InventoryCloseEvent, T> closeAction,
-                Function<Page<T>, T> constructView) {
+    private final Set<View> views;
+    private BiConsumer<InventoryCloseEvent, View> closeAction;
+
+    public Page(GUI gui, int page, String name, boolean isGlobal, int pageSize, BiConsumer<InventoryCloseEvent, View> closeAction) {
         this.gui = gui;
         this.page = page;
         this.name = name;
@@ -45,23 +43,18 @@ public class Page<T extends View<T>> {
         this.items = new Item[pageSize];
         this.pageSize = pageSize;
         this.closeAction = closeAction;
-        this.constructView = constructView;
         views = new HashSet<>();
     }
 
-    public void setConstructView(Function<Page<T>, T> constructView) {
-        this.constructView = constructView;
-    }
-
-    public BiConsumer<InventoryCloseEvent, T> getCloseAction() {
+    public BiConsumer<InventoryCloseEvent, View> getCloseAction() {
         return closeAction;
     }
 
-    public void setCloseAction(BiConsumer<InventoryCloseEvent, T> closeAction) {
+    public void setCloseAction(BiConsumer<InventoryCloseEvent, View> closeAction) {
         this.closeAction = closeAction;
     }
 
-    public void disposeView(T view) {
+    public void disposeView(View view) {
         if (!isGlobal) {
             views.removeIf(view1 -> view1 == view);
             view.dispose();
@@ -92,7 +85,7 @@ public class Page<T extends View<T>> {
         System.arraycopy(items, 0, this.items, 0, this.items.length);
     }
 
-    public Set<T> getViews() {
+    public Set<View> getViews() {
         return views;
     }
 
@@ -100,13 +93,13 @@ public class Page<T extends View<T>> {
         return pageSize;
     }
 
-    public T getView() {
+    public View getView() {
         if (isGlobal) {
             if (views.size() >= 1) {
-                return (T) views.iterator().next();
+                return views.iterator().next();
             }
         }
-        T view = constructView.apply(this);
+        View view = new View(this);
         views.add(view);
         return view;
     }

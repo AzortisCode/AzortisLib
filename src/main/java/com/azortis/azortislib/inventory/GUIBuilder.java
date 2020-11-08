@@ -23,7 +23,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class GUIBuilder {
     private final GUI gui;
@@ -36,21 +35,20 @@ public class GUIBuilder {
         return gui;
     }
 
-    public <T extends View<T>> PageBuilder<T> addPage(int pageSize) {
-        return new PageBuilder<T>(this, pageSize);
+    public PageBuilder addPage(int pageSize) {
+        return new PageBuilder(this, pageSize);
     }
 
-    public static class PageBuilder<T extends View<T>> {
+    public static class PageBuilder {
         private final GUIBuilder guiBuilder;
         public int page;
         public String name;
         public boolean isGlobal;
-        public BiConsumer<InventoryCloseEvent, T> closeAction;
-        public Function<Page<T>, T> constructView;
+        public BiConsumer<InventoryCloseEvent, View> closeAction;
         public Item[] items;
         private int pageSize;
 
-        public PageBuilder(GUIBuilder builder, int pageSize) {
+        private PageBuilder(GUIBuilder builder, int pageSize) {
             this.guiBuilder = builder;
             this.pageSize = pageSize;
             items = new Item[pageSize];
@@ -64,9 +62,9 @@ public class GUIBuilder {
         }
 
 
-        public GUIBuilder with(Consumer<PageBuilder<T>> pageBuilderConsumer) {
+        public GUIBuilder with(Consumer<PageBuilder> pageBuilderConsumer) {
             pageBuilderConsumer.accept(this);
-            Page<T> p = new Page<>(guiBuilder.gui, page, name, isGlobal, pageSize, closeAction, constructView);
+            Page p = new Page(guiBuilder.gui, page, name, isGlobal, pageSize, closeAction);
             p.setItems(items);
             guiBuilder.gui.getPages().add(p);
             return guiBuilder;
