@@ -16,11 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.utils;
+package com.azortis.azortislib.version;
 
+import com.azortis.azortislib.utils.FormatUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,23 +28,29 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * A class used to get the latest version of this plugin from spigot using SpiGet
+ * A class used to get the latest version of this plugin from spigot using the SpiGet API
  */
-public class VersionUtil {
+public class Updater {
     private final String version;
-    private String downloadedVersion;
+    private final String userAgent;
+    private final int resource;
+    private String latestVersion;
 
-    public VersionUtil(JavaPlugin plugin) {
-        version = plugin.getDescription().getVersion();
+    public Updater(String version, String userAgent, int resourceID) {
+        this.resource = resourceID;
+        this.version = version;
+        this.userAgent = userAgent;
     }
 
-    public Status check(int resourceID) {
+    public Status checkVersion(int resourceID) {
         try {
-            URLConnection connection = new URL("https://api.spiget.org/v2/resources/" + resourceID + "/versions/latest").openConnection();
+            URLConnection connection = new URL("https://api.spiget.org/v2/resources/" + this.resource + "/versions/latest").openConnection();
+            connection.addRequestProperty("User-Agent", this.userAgent);
             JsonObject object = (JsonObject) new JsonParser().parse(new InputStreamReader(connection.getInputStream()));
-            downloadedVersion = object.get("name").getAsString();
-            String[] dVer = downloadedVersion.split("\\.");
-            String[] ver = version.split("\\.");
+            this.latestVersion = object.get("name").getAsString();
+
+            String[] dVer = this.latestVersion.split("\\.");
+            String[] ver = this.version.split("\\.");
             FormatUtil.equalizeStringArray(ver, dVer);
             String sVer = ver[0] + ver[1] + ver[2];
             String stringver = dVer[0] + dVer[1] + dVer[2];
@@ -62,8 +68,8 @@ public class VersionUtil {
         }
     }
 
-    public String getDownloadedVersion() {
-        return downloadedVersion;
+    public String getLatestVersion() {
+        return latestVersion;
     }
 
     public enum Status {
