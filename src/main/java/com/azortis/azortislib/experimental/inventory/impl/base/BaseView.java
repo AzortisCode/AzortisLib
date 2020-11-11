@@ -16,32 +16,37 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.inventory;
+package com.azortis.azortislib.experimental.inventory.impl.base;
 
+import com.azortis.azortislib.experimental.inventory.Page;
+import com.azortis.azortislib.experimental.inventory.View;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * An interface which represents what a user would see.
- */
-@SuppressWarnings("unused")
-public interface View extends InventoryHolder {
-    /**
-     * Get the parent page of this view.
-     *
-     * @return the Page which holds this view.
-     */
-    Page getPage();
+public class BaseView implements View {
+    protected Inventory inventory;
+    protected Page page;
 
-    /**
-     * Clears all references to the parent page and/or any other references outside of the View.
-     */
-    void dispose();
+    public BaseView(Page page) {
+        this.page = page;
+    }
 
-    /**
-     * Sets the inventory linked to the View.
-     *
-     * @param inventory the {@link Inventory} to set it to.
-     */
-    void setInventory(Inventory inventory);
+    @Override
+    public Page getPage() {
+        return page;
+    }
+
+    @Override
+    public void dispose() {
+        page = null;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
 }

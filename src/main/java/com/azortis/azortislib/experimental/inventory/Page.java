@@ -21,6 +21,7 @@ package com.azortis.azortislib.experimental.inventory;
 import com.azortis.azortislib.experimental.inventory.item.Button;
 import com.azortis.azortislib.experimental.inventory.item.ButtonSlot;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -138,4 +139,11 @@ public interface Page {
      * @throws IllegalArgumentException if slot < 1
      */
     Button getButton(int slot);
+
+    /**
+     * Used when getting an instance of the inventory from the Page.
+     *
+     * @return {@link Inventory} an instance of the inventory from the page.
+     */
+    Inventory getInventory();
 }

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public abstract class BaseGUI implements GUI {
+public class BaseGUI implements GUI {
     protected String name;
     protected Map<Integer, Page> pageMap;
 

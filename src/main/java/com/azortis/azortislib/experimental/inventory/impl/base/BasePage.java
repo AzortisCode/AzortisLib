@@ -23,9 +23,13 @@ import com.azortis.azortislib.experimental.inventory.Page;
 import com.azortis.azortislib.experimental.inventory.View;
 import com.azortis.azortislib.experimental.inventory.item.Button;
 import com.azortis.azortislib.experimental.inventory.item.ButtonSlot;
+import com.azortis.azortislib.utils.FormatUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -35,7 +39,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
-public abstract class BasePage implements Page {
+public class BasePage implements Page {
     protected final GUI gui;
     protected final int inventorySize;
     protected String inventoryName;
@@ -128,5 +132,32 @@ public abstract class BasePage implements Page {
     @Override
     public Button getButton(int slot) {
         return this.inventory.get(slot - 1).getButton();
+    }
+
+    @Override
+    public Inventory getInventory() {
+        View view;
+        if (isGlobal) {
+            if (viewSet.size() < 1) {
+                view = new BaseView(this);
+                viewSet.add(view);
+            } else {
+                return viewSet.iterator().next().getInventory();
+            }
+        } else {
+            view = new BaseView(this);
+            viewSet.add(view);
+        }
+        Inventory inventory = Bukkit.createInventory(view, inventorySize, FormatUtil.color(inventoryName));
+        ItemStack[] contents = new ItemStack[inventorySize];
+        for (int i = 0; i < items().size(); i++) {
+            Button button = items().get(i).getButton();
+            if (button != null && button.getItem() != null) {
+                contents[i] = button.getItem().getItemStack();
+            }
+        }
+        inventory.setContents(contents);
+        view.setInventory(inventory);
+        return inventory;
     }
 }
