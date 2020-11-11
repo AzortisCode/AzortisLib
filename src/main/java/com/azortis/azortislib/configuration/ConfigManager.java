@@ -28,14 +28,30 @@ public class ConfigManager {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final JavaPlugin plugin;
 
+    /**
+     *
+     * @param plugin The plugin to use when loading in configuration files.
+     */
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Loads and creates a configuration file.
+     *
+     * @param name The name/path of the configuration file.
+     * @param defaults The default values of the configuration file
+     * @param <T> The type/class of the configuration file.
+     * @return {@link Config<T>} the config object
+     */
     public <T> Config<T> loadConfig(String name, T defaults) {
         return new Config<T>(name, gson, plugin, defaults);
     }
 
+    /**
+     *
+     * @return The Gson object used to load in configuration data.
+     */
     public Gson getGson() {
         return gson;
     }

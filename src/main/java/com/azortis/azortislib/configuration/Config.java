@@ -28,12 +28,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
+/**
+ * A configuration file class which loads a JSON configuration file.
+ */
 @SuppressWarnings("all")
 public class Config<T> {
     private final Gson gson;
     private final File configurationFile;
     private T configuration;
 
+    /**
+     * @param name the name/path of the configuration file within the plugin's data folder.
+     * @param gson The gson for the configuration file to use to load in the configuration data.
+     * @param plugin The plugin to use for the data folder.
+     * @param defaults The default values to use if no file is found or exists.
+     */
     public Config(String name, Gson gson, JavaPlugin plugin, T defaults) {
         this.gson = gson;
         configurationFile = new File(plugin.getDataFolder(), name.endsWith(".json") ? name : name + ".json");
@@ -52,14 +61,25 @@ public class Config<T> {
 
     }
 
+    /**
+     *
+     * @return The configuration file
+     */
     public File getConfigurationFile() {
         return configurationFile;
     }
 
+    /**
+     *
+     * @return The configuration data
+     */
     public T getConfiguration() {
         return configuration;
     }
 
+    /**
+     * Saves the configuration file
+     */
     public void saveConfig() {
         try {
             final String json = gson.toJson(configuration);
@@ -70,6 +90,9 @@ public class Config<T> {
         }
     }
 
+    /**
+     * Reloads the configuration file
+     */
     public void reloadConfig() {
         try {
             configuration = (T) gson.fromJson(new FileReader(configurationFile), configuration.getClass());

@@ -18,7 +18,19 @@
 
 package com.azortis.azortislib.utils;
 
+/**
+ * A class which contains mathematical utility methods.
+ */
+@SuppressWarnings("unused")
 public class MathUtil {
+    /**
+     * Takes the original value given and the values already given and finds the closest value to the original.
+     * Originally used to determine which cardinal direction a player is facing based off of degrees.
+     *
+     * @param original The value to compare against the other values
+     * @param values   The values which should be considered to find the closest.
+     * @return Whichever value is closest to the original value.
+     */
     public static int roundToClosest(int original, int... values) {
         int closest = Integer.MAX_VALUE;
         int value = 0;

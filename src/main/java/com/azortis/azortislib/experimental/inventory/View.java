@@ -16,25 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.utils;
+package com.azortis.azortislib.experimental.inventory;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
 
+/**
+ * An interface which represents what a user would see.
+ */
 @SuppressWarnings("unused")
-public class MessageUtils {
+public interface View extends InventoryHolder {
+    /**
+     * Get the parent page of this view.
+     *
+     * @return the Page which holds this view.
+     */
+    Page getPage();
 
-    public static void sendPlayerMessage(Player receiver, Player placeholderPlayer, String message) {
-        message = PlaceholderAPI.setPlaceholders(placeholderPlayer, message);
-        if (message.startsWith("[JSON]")) {
-            String jsonString = message.replaceFirst("[JSON]", "").trim();
-            BaseComponent[] baseComponents = ComponentSerializer.parse(jsonString);
-            receiver.spigot().sendMessage(baseComponents);
-        }
-        receiver.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-    }
-
+    /**
+     * Clears all references to the parent page and/or any other references outside of the View.
+     */
+    void dispose();
 }

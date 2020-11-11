@@ -30,19 +30,31 @@ import java.net.URLConnection;
 /**
  * A class used to get the latest version of this plugin from spigot using the SpiGet API
  */
+@SuppressWarnings("unused")
 public class Updater {
     private final String version;
     private final String userAgent;
     private final int resource;
     private String latestVersion;
 
+    /**
+     *
+     * @param version the plugin's version.
+     * @param userAgent the user agent to send alongside the resource request.
+     * @param resourceID the plugin's spigot resource id.
+     */
     public Updater(String version, String userAgent, int resourceID) {
         this.resource = resourceID;
         this.version = version;
         this.userAgent = userAgent;
     }
 
-    public Status checkVersion(int resourceID) {
+    /**
+     * Compares the plugin's current version to the latest version SpiGet can find.
+     *
+     * @return {@link Status} the status of the plugin's current version compared to the latest version.
+     */
+    public Status checkVersion() {
         try {
             URLConnection connection = new URL("https://api.spiget.org/v2/resources/" + this.resource + "/versions/latest").openConnection();
             connection.addRequestProperty("User-Agent", this.userAgent);
@@ -63,16 +75,41 @@ public class Updater {
                 return Status.UNRELEASED;
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             return Status.UNKNOWN;
         }
     }
 
+    /**
+     * Gets the latest version currently known from SpiGet.
+     * Value is only updated when the method checkVersion is run.
+     *
+     * @return The latest version of the plugin in string form.
+     */
     public String getLatestVersion() {
         return latestVersion;
     }
 
+    /**
+     * An enum which represents the status of the current plugin when compared to the latest version known.
+     */
     public enum Status {
-        OLD, NEW, UNRELEASED, UNKNOWN
+        /**
+         * The current plugin version is older than the latest released version on spigotmc.
+         */
+        OLD,
+        /**
+         * The current plugin version is the latest version possible and is up to date.
+         */
+        NEW,
+        /**
+         * The current plugin version is a dev build and/or hasn't been released to the spigotmc page.
+         */
+        UNRELEASED,
+        /**
+         * The current plugin version is unknown when compared in relation to the known versions.
+         * This is only returned when the version contains non-numerical digits or if an error occurred.
+         */
+        UNKNOWN
     }
 }

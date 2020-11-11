@@ -23,8 +23,19 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * A class which contains utilities for file manipulation.
+ */
+@SuppressWarnings("unused")
 public class FileUtils {
-
+    /**
+     * Copies the data from an input stream into the file given.
+     * <p>
+     * Originally used to copy config files from inside the plugin jar to it's data folder.
+     *
+     * @param in   The inputstream to copy data from
+     * @param file The file to copy data to.
+     */
     public static void copy(InputStream in, File file) {
         try (OutputStream out = new FileOutputStream(file)) {
             byte[] buf = new byte[1024];

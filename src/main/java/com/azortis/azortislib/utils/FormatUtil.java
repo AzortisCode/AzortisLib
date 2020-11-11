@@ -20,7 +20,19 @@ package com.azortis.azortislib.utils;
 
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
+/**
+ * A utility class which contains utility methods for formatting strings.
+ */
+@SuppressWarnings("unused")
 public class FormatUtil {
+    /**
+     * Gets a seperator that has a title added to the middle of it.
+     *
+     * @param title the title to add
+     * @return A string separator with a title added to it
+     */
     public static String getSeparator(String title) {
         StringBuilder builder = new StringBuilder(getSeparator());
         if (title.length() > builder.length()) {
@@ -32,10 +44,24 @@ public class FormatUtil {
 
     }
 
+    /**
+     * Get a separator to be used in console
+     *
+     * @return A string separator to be used in console.
+     */
     public static String getSeparator() {
         return "------------------------------------------";
     }
 
+    /**
+     * Used to take two string arrays, and equalize the length of each string in both string arrays to the
+     * largest string length by adding 0's in front.
+     * <p>
+     * Originally used to format versions and then used to compare version numbers.
+     *
+     * @param arr  One of the arrays to equalize
+     * @param arr2 The second array to equalize.
+     */
     public static void equalizeStringArray(String[] arr, String[] arr2) {
         int longestLength = -1;
         for (String s : arr) {
@@ -60,13 +86,32 @@ public class FormatUtil {
         }
     }
 
+    /**
+     * Translates color codes in messages to their bukkit equivalents ready to be sent to players.
+     *
+     * @param s the string to translate
+     * @return an array of translated strings.
+     */
     public static String[] color(String... s) {
         for (int i = 0; i < s.length; i++)
             s[i] = color(s[i]);
         return s;
     }
 
+    /**
+     * Translates color codes in messages to their bukkit equivalents ready to be sent to players.
+     *
+     * @param s the string to translate
+     * @return an the translated string.
+     */
     public static String color(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public static List<String> color(List<String> list) {
+        for (int i = 0; i < list.size(); i++) {
+            list.set(i, ChatColor.translateAlternateColorCodes('&', list.get(i)));
+        }
+        return list;
     }
 }
