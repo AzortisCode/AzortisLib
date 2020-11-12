@@ -16,8 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.inventory.serialization;
+package com.azortis.azortislib.experimental.configuration;
 
-public class SerializationManager {
-    // todo: remember to add configuration and serialization options for inventory.
+public class ConfigurationManager {
 }

@@ -16,8 +16,30 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.inventory.serialization;
+package com.azortis.azortislib.experimental.translation;
 
-public class SerializationManager {
-    // todo: remember to add configuration and serialization options for inventory.
+import java.io.File;
+import java.util.Map;
+
+public interface Translation {
+
+    void addMessage(String key, String message);
+
+    String get(String key);
+
+    void removeMessage(String key);
+
+    Map<String, String> getKeyMessageMap();
+
+    String getOrDefault(String key, String message);
+
+    String getFileEnding();
+
+    void save();
+
+    void save(File file);
+
+    void reload();
+
+    void load(File file);
 }

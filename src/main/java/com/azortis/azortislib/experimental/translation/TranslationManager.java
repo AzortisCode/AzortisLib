@@ -16,8 +16,26 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.azortis.azortislib.experimental.inventory.serialization;
+package com.azortis.azortislib.experimental.translation;
 
-public class SerializationManager {
-    // todo: remember to add configuration and serialization options for inventory.
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+
+public class TranslationManager {
+    public static <T extends Translation> T loadTranslation(String location, T instance, JavaPlugin plugin) {
+        File file = new File(plugin.getDataFolder() + instance.getFileEnding(), location);
+        try {
+            if (!file.exists()) {
+                file.mkdirs();
+                file.createNewFile();
+            }
+            instance.load(file);
+            return instance;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
