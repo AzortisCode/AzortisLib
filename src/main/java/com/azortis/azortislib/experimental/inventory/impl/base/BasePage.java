@@ -47,8 +47,9 @@ public class BasePage implements Page {
     protected Set<View> viewSet;
     protected BiConsumer<InventoryCloseEvent, View> closeEvent;
     protected List<ButtonSlot> inventory;
+    protected int guiInt;
 
-    public BasePage(GUI gui, int inventorySize) {
+    public BasePage(GUI gui, int inventorySize, int guiInt) {
         isValidSize();
         this.gui = gui;
         this.inventorySize = inventorySize;
@@ -57,6 +58,12 @@ public class BasePage implements Page {
             inventory.add(new ButtonSlot(i));
         }
         viewSet = new HashSet<>();
+        this.guiInt = guiInt;
+    }
+
+    @Override
+    public int getGuiInt() {
+        return guiInt;
     }
 
     private void isValidSize() {

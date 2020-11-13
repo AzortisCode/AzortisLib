@@ -145,4 +145,6 @@ public interface Page {
      * @return {@link Inventory} an instance of the inventory from the page.
      */
     Inventory getInventory();
+
+    int getGuiInt();
 }
