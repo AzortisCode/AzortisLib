@@ -36,12 +36,13 @@ public class GUIManager implements Listener {
     public void onPlayerClose(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof View) {
             View view = (View) event.getInventory().getHolder();
-            view.getPage().closeAction().accept(event, view);
+            if (view.getPage().closeAction() != null)
+                view.getPage().closeAction().accept(event, view);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerCloseMonitory(InventoryCloseEvent event) {
+    public void onPlayerCloseMonitor(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof View) {
             View view = (View) event.getInventory().getHolder();
             if (!view.getPage().isGlobal()) {

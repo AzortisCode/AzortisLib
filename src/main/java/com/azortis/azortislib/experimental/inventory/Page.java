@@ -81,7 +81,6 @@ public interface Page {
      *
      * @return the BiConsumer called when the inventory is closed.
      */
-    @NotNull
     BiConsumer<InventoryCloseEvent, View> closeAction();
 
     /**
