@@ -22,12 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-
 @SuppressWarnings("all")
 public class ConfigManager {
 
@@ -58,36 +52,6 @@ public class ConfigManager {
      */
     public Gson getGson() {
         return gson;
-    }
-
-    /**
-     * Loads an enum's values into existence.
-     */
-    public void loadEnum(String name, Class clazz) {
-        File f = new File(plugin.getDataFolder(), name + ".json");
-
-        try {
-            if (!plugin.getDataFolder().exists()) {
-                plugin.getDataFolder().mkdirs();
-            }
-
-            if (!f.exists()) {
-                f.mkdirs();
-                f.createNewFile();
-
-                try {
-                    String json = gson.toJson(clazz);
-                    Files.write(f.toPath(), json.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                } catch (IOException var2) {
-                    var2.printStackTrace();
-                }
-
-            } else {
-                gson.fromJson(new FileReader(f), clazz);
-            }
-        } catch (IOException var6) {
-            var6.printStackTrace();
-        }
     }
 }
 
