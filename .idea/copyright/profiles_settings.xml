@@ -1,5 +1,5 @@
 <component name="CopyrightManager">
-  <settings>
+  <settings default="AzortisLib">
     <module2copyright>
       <element module="All" copyright="AzortisLib" />
     </module2copyright>

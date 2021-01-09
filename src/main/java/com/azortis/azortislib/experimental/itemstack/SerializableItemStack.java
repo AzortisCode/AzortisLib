@@ -1,25 +1,33 @@
 /*
- * An open source utilities library used for Azortis plugins.
- *     Copyright (C) 2019  Azortis
+ * MIT License
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * Copyright (c) 2021 Azortis
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package com.azortis.azortislib.experimental.itemstack;
 
 import com.azortis.azortislib.experimental.itemstack.meta.SerializableBookMeta;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -27,12 +35,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SerializableItemStack {
 
     // ItemStack
-    private Material type;
-    private int amount;
+    private final Material type;
+    private final int amount;
 
     // ItemMeta
     private String displayName;
@@ -56,7 +65,7 @@ public class SerializableItemStack {
             if(itemMeta.hasLore()) this.lore = itemMeta.getLore();
             if(itemMeta.hasEnchants()) {
                 this.enchantments = new ArrayList<>();
-                itemMeta.getEnchants().forEach((enchantment, level) -> this.enchantments.add(enchantment.toString() + ";" + level));
+                itemMeta.getEnchants().forEach((enchantment, level) -> this.enchantments.add(enchantment.getKey().getKey() + ";" + level));
             }
             if(itemMeta.hasCustomModelData())this.customModelData = itemMeta.getCustomModelData();
             this.unbreakable = itemMeta.isUnbreakable();
@@ -76,6 +85,12 @@ public class SerializableItemStack {
         assert itemMeta != null;
         if(displayName != null) itemMeta.setDisplayName(displayName);
         if(lore != null) itemMeta.setLore(lore);
+        if(enchantments != null) {
+            for (String strEnchantment : enchantments){
+                NamespacedKey key = NamespacedKey.minecraft(strEnchantment.split(";")[0]);
+                itemMeta.addEnchant(Objects.requireNonNull(Enchantment.getByKey(key)), Integer.getInteger(strEnchantment.split(";")[1]), true);
+            }
+        }
         itemMeta.setCustomModelData(customModelData);
         itemMeta.setUnbreakable(unbreakable);
 

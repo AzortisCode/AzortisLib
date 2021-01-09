@@ -22,31 +22,14 @@
  * SOFTWARE.
  */
 
-package com.azortis.azortislib.utils;
+package com.azortis.azortislib.experimental.itemstack.meta;
 
-/**
- * A class which contains mathematical utility methods.
- */
-@SuppressWarnings("unused")
-public class MathUtil {
-    /**
-     * Takes the original value given and the values already given and finds the closest value to the original.
-     * Originally used to determine which cardinal direction a player is facing based off of degrees.
-     *
-     * @param original The value to compare against the other values
-     * @param values   The values which should be considered to find the closest.
-     * @return Whichever value is closest to the original value.
-     */
-    public static int roundToClosest(int original, int... values) {
-        int closest = Integer.MAX_VALUE;
-        int value = 0;
-        for (int i : values) {
-            int range = Math.abs(i - original);
-            if (range < closest) {
-                value = i;
-                closest = range;
-            }
-        }
-        return value;
-    }
+import java.util.UUID;
+
+public class SerializableSkullMeta {
+
+    private UUID skullOwnerId;
+    private String skullOwner;
+    private String texture;
+
 }
